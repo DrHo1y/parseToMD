@@ -31,6 +31,8 @@ async function parseHTML(urls, _class) {
     }
 }
 
+// Example Articles:
+
 const urls = [
     'https://habr.com/ru/companies/selectel/articles/893268/',
     'https://habr.com/ru/articles/892860/',
