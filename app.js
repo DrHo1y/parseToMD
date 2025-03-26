@@ -30,6 +30,7 @@ async function parseHTML(obj, tagName) {
         return { url, status: 'ok' }
     } catch (e) {
         console.error(e)
+        let url = obj.url
         return { url, status: 'error' }
     }
 }
