@@ -1,0 +1,17 @@
+{
+  "name": "md_parser",
+  "version": "1.0.0",
+  "description": "Simple article parser for hubr",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsdom": "^26.0.0",
+    "request-promise": "^4.2.6",
+    "turndown": "^7.2.0"
+  }
+}
