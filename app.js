@@ -71,6 +71,14 @@ async function parseURLsAndSave() {
     })
 }
 
+function chunkArray(array, size) {
+    const chunks = []
+    for (let i = 0; i < array.length; i += size) {
+        chunks.push(array.slice(i, i + size))
+    }
+    return chunks
+}
+
 // async function main(count) {
 //     var time = Date.now()
 
@@ -151,12 +159,4 @@ if (isMainThread) {
         }
         parentPort.postMessage(responses)
     })()
-}
-
-function chunkArray(array, size) {
-    const chunks = []
-    for (let i = 0; i < array.length; i += size) {
-        chunks.push(array.slice(i, i + size))
-    }
-    return chunks
 }
