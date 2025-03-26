@@ -25,7 +25,7 @@ async function parseHTML(urls, tagName) {
                     // console.log(`File save as ${filename}`)
                 }
             })
-            console.log((i+1) + '/' + len)
+            console.log('Parse html to md: ' + (i+1) + '/' + len)
         }
     } catch (e) {
         console.error(e)
@@ -55,10 +55,11 @@ async function main() {
     const query = 'div.tm-article-snippet.tm-article-snippet > h2 > a'
     var masURL = []
 
-    for (let i = 1; i < 11; i++)
+    for (let i = 1; i < 47 + 1; i++)
     {
         let urlsT = await pasreArticlesURL(`https://habr.com/ru/hubs/DIY/articles/page${i}/`, query)
         masURL.push(urlsT)
+        console.log(`Parse urls ${i}/47 pages`)
     }
     masURL = masURL.flat()
     var time = Date.now()
