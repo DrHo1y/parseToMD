@@ -1,5 +1,5 @@
 {
-  "name": "md_parser",
+  "name": "parse_to_md",
   "version": "1.0.0",
   "description": "Simple article parser for hubr",
   "main": "app.js",
