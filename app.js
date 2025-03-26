@@ -1,38 +1,36 @@
+const { Worker, isMainThread, parentPort, workerData } = require('node:worker_threads')
 const TurndownService = require('turndown')
 const { JSDOM } = require('jsdom')
 const rp = require('request-promise')
 const fs = require('node:fs')
-async function parseHTML(urls, tagName) {
+
+async function parseHTML(obj, tagName) {
     try {
-        const len = urls.length
-        for (let i = 0; i < len; i++) {
+        const url = obj.url
+        const index = obj.index
+        const html = await rp(url)
+        const dom = new JSDOM(html)
+        const document = dom.window.document
+        const name = document.getElementsByClassName('tm-title tm-title_h1')
+            .item(0).textContent
+            .replace(new RegExp('[\\/:*?"<>ツ|\n\r\t\v]', 'gm'), '')
+            .replace(new RegExp('/\.$/]', 'gm'), '')
+            .trim()
+        const res = document.getElementsByTagName(tagName).item(0).outerHTML
 
-            const html = await rp(urls[i])
-
-            const dom = new JSDOM(html)
-            const document = dom.window.document
-            const name = document.getElementsByClassName('tm-title tm-title_h1')
-                .item(0).textContent
-                .replace(new RegExp('[\\/:*?"<>|\n\r\t\v]', 'gm'), '')
-                .replace(new RegExp('\/\.$/', 'gm'), '')
-                .trim()
-            const res = document.getElementsByTagName(tagName).item(0).outerHTML
-
-            const turndownService = new TurndownService()
-            const markdown = turndownService.turndown(res)
-            const filename = `content1/${i + 1}-${name}.md`
-            fs.writeFile(filename, markdown, err => {
-                if (err) {
-                    console.error(err)
-                } else {
-                    // console.log(`File save as ${filename}`)
-                    console.log(urls[i])
-                }
-            })
-            console.log('Parse html to md: ' + (i + 1) + '/' + len)
-        }
+        const turndownService = new TurndownService()
+        const markdown = turndownService.turndown(res)
+        const filename = `content1/${index}-${name}.md`
+        fs.writeFile(filename, markdown, err => {
+            if (err) {
+                console.error(err)
+            } else {
+            }
+        })
+        return { url, status: 'ok' }
     } catch (e) {
-        console.error('error')
+        console.error(e)
+        return { url, status: 'error' }
     }
 }
 
@@ -73,51 +71,20 @@ async function parseURLsAndSave() {
     })
 }
 
-async function main(count) {
-    var time = Date.now()
+// async function main(count) {
+//     var time = Date.now()
 
 
-    const jsonURL = JSON.parse(fs.readFileSync('urls.json', 'utf-8'))
+//     const jsonURL = JSON.parse(fs.readFileSync('urls.json', 'utf-8'))
 
-    await parseHTML(jsonURL, 'article').then(() => {
-        time = (Date.now() - time) / 1000 / 60
-        console.log(`Complite! ${time}m`)
-    })
-}
+//     await parseHTML(jsonURL, 'article').then(() => {
+//         time = (Date.now() - time) / 1000 / 60
+//         console.log(`Complite! ${time}m`)
+//     })
+// }
 
 // main(47)
 
-async function parseHTMLtest(obj, tagName) {
-    try {
-        const url = obj.url
-        const index = obj.index
-        const html = await rp(url)
-        const dom = new JSDOM(html)
-        const document = dom.window.document
-        const name = document.getElementsByClassName('tm-title tm-title_h1')
-            .item(0).textContent
-            .replace(new RegExp('[\\/:*?"<>ツ|\n\r\t\v]', 'gm'), '')
-            .replace(new RegExp('/\.$/]', 'gm'), '')
-            .trim()
-        const res = document.getElementsByTagName(tagName).item(0).outerHTML
-
-        const turndownService = new TurndownService()
-        const markdown = turndownService.turndown(res)
-        const filename = `content1/${index}-${name}.md`
-        fs.writeFile(filename, markdown, err => {
-            if (err) {
-                console.error(err)
-            } else {
-            }
-        })
-        return { url, status: 'ok' }
-    } catch (e) {
-        console.error(e)
-        return { url, status: 'error' }
-    }
-}
-
-const { Worker, isMainThread, parentPort, workerData } = require('node:worker_threads')
 
 // Основной процесс (главный поток)
 if (isMainThread) {
@@ -179,7 +146,7 @@ if (isMainThread) {
     (async () => {
         const responses = []
         for (const url of urls) {
-            const result = await parseHTMLtest(url, 'article')
+            const result = await parseHTML(url, 'article')
             responses.push(result)
         }
         parentPort.postMessage(responses)
