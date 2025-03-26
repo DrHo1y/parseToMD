@@ -2,3 +2,5 @@ node_modules/
 content/
 content1/
 package-lock.json
+result.json
+urls.json
