@@ -12,7 +12,7 @@ async function parseHTML(urls, tagName) {
             const dom = new JSDOM(html)
             const document = dom.window.document
             const name = document.getElementsByClassName('tm-title tm-title_h1')
-                .item(0).textContent.replace(new RegExp('[|*?<>:\\\n\r\t\v]', 'gm'), '')
+                .item(0).textContent.replace(new RegExp('[|*?<>/:\\\n\r\t\v]', 'gm'), ' ')
             const res = document.getElementsByTagName(tagName).item(0).outerHTML
 
             const turndownService = new TurndownService()
@@ -23,6 +23,7 @@ async function parseHTML(urls, tagName) {
                     console.error(err)
                 } else {
                     // console.log(`File save as ${filename}`)
+                    console.log(urls[i])
                 }
             })
             console.log('Parse html to md: ' + (i+1) + '/' + len)
@@ -45,6 +46,12 @@ async function pasreArticlesURL(url, query) {
             let res = urlHttps + url.href
             resURLS.push(res)
         })
+        fs.writeFile('urls.txt', resURLS, err => {
+            if (err) {
+                console.error(err)
+            } else {
+            }
+        })
         return resURLS
     } catch (e) {
         console.log(e)
@@ -52,6 +59,7 @@ async function pasreArticlesURL(url, query) {
 }
 
 async function main() {
+    var time = Date.now()
     const query = 'div.tm-article-snippet.tm-article-snippet > h2 > a'
     var masURL = []
 
@@ -62,7 +70,7 @@ async function main() {
         console.log(`Parse urls ${i}/47 pages`)
     }
     masURL = masURL.flat()
-    var time = Date.now()
+    
     await parseHTML(masURL, 'article').then(() => {
         time = (Date.now() - time) / 1000
         console.log(`Complite! ${time}s`)
