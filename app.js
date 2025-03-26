@@ -12,7 +12,10 @@ async function parseHTML(urls, tagName) {
             const dom = new JSDOM(html)
             const document = dom.window.document
             const name = document.getElementsByClassName('tm-title tm-title_h1')
-                .item(0).textContent.replace(new RegExp('[|*?<>/:\\\n\r\t\v]', 'gm'), ' ')
+                .item(0).textContent
+                .replaceAll(new RegExp('[\\/:*?"<>|\n\r\t\v]', 'gm'), '')
+                .replaceAll(/\.$/, '')
+                .trim()
             const res = document.getElementsByTagName(tagName).item(0).outerHTML
 
             const turndownService = new TurndownService()
