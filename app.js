@@ -13,7 +13,7 @@ async function parseHTML(obj, tagName) {
         const document = dom.window.document
         const name = document.getElementsByClassName('tm-title tm-title_h1')
             .item(0).textContent
-            .replace(new RegExp('[\\/:*?"<>ツ|\n\r\t\v]', 'gm'), '')
+            .replace(new RegExp('[\\/:*?"<>|\n\r\t\v]', 'gm'), '')
             .replace(new RegExp('/\.$/]', 'gm'), '')
             .trim()
         const res = document.getElementsByTagName(tagName).item(0).outerHTML
@@ -29,7 +29,6 @@ async function parseHTML(obj, tagName) {
         })
         return { url, status: 'ok' }
     } catch (e) {
-        console.error(e)
         let url = obj.url
         return { url, status: 'error' }
     }
@@ -122,7 +121,6 @@ if (isMainThread) {
                 completedRequests++
                 if (completedRequests === numWorkers) {
                     console.log('Все запросы завершены.')
-                    console.log('Результаты:', results)
                     fs.writeFileSync('result.json', JSON.stringify(results), err => {
                         if (err) {
                             console.error(err)
